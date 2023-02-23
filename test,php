@@ -18,26 +18,32 @@ if ($conn->connect_error) {
 }
 
 // Prepare and bind the SQL statement
-$stmt = $conn->prepare("INSERT INTO users (name, address, phone_number, company) VALUES (?, ?, ?, ?)");
-$stmt->bind_param("ssss", $name, $address, $phone_number, $company);
-
-for($x = 0; $x < 100000; $x++) {
-
-        $stmt = $conn->prepare("INSERT INTO users (name, address, phone_number, company) VALUES (?, ?, ?, ?)");
-        $stmt->bind_param("ssss", $name, $address, $phone_number, $company);
 
 $faker = Faker\Factory::create();
-$name = $faker->name();
+
+for($y = 0; $y < 1000; $y++) {
+$sql = "insert into users (name, address, company, phone_number) values ";
+for($x = 0; $x < 1000; $x++) {
+
+
+$name = str_replace("'", "", $faker->name());
 $address = $faker->email();
-$company = $faker->company();
+$company = str_replace("'", "", $faker->company());
 $phone_number = "44433322222";
 
-echo $stmt->execute();
-echo "Error is";
-echo $stmt->error;
-$stmt->close();
-//echo "New record created successfully";
+$sql = $sql . " ('$name', '$address', '$company', '$phone_number') ";
+if($x < 999) {
+       $sql = $sql . ',';
 }
+}
+//echo $sql;
+
+
+if ($conn->query($sql) === TRUE) {
+} else {
+  echo "Error: " . $sql . "<br>" . $conn->error;
+}}
+//echo "New record created successfully";
 
 // Close the statement and the database connection
 $conn->close();
